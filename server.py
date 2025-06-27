@@ -9,7 +9,7 @@ import g4f
 app = Flask(__name__)
 DATA_FILE = "users.json"
 
-# Загрузка данных
+# Save loading
 if os.path.exists(DATA_FILE):
     with open(DATA_FILE, "r") as f:
         try:
@@ -19,17 +19,17 @@ if os.path.exists(DATA_FILE):
 else:
     users = {}
 
-# Сохранение
+# Save
 def save_users():
     with open(DATA_FILE, "w") as f:
         json.dump(users, f, indent=2)
 
-# === Конфигурация лимитов ===
+# === Limit config ===
 LIMIT_DOLLAR = 15
 LIMIT_REQUESTS = 100
 COST_PER_REQUEST = 0.1
 
-# === Генерация ключа ===
+# === Key generate ===
 def generate_api_key():
     return f"honey_{random.randint(100000, 999999)}"
 
