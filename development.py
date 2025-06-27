@@ -13,7 +13,7 @@ bot = telebot.TeleBot(API_TOKEN)
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.reply_to(message, "👋 Привет! Напиши /key, чтобы получить или посмотреть свой API-ключ.")
+    bot.reply_to(message, f" Hello, {message.from_user.first_name} {message.from_user.last_name}! \n \ncommands list: \n<b>API Platform:</b> \n/key - Make / view API key information.", parse_mode='HTML')
 
 @bot.message_handler(commands=['key'])
 def check_key(message):
@@ -21,21 +21,21 @@ def check_key(message):
     res = requests.post(API_INFO_URL, json={"user_id": user_id})
 
     if res.status_code != 200:
-        bot.reply_to(message, "⚠️ Ошибка при получении информации.")
+        bot.reply_to(message, "error: Information not found.")
         return
 
     data = res.json()
 
     if data.get("exists"):
-        info = f"""🔑 <b>Ваш API ключ:</b> <code>{data['api_key']}</code>
-💰 <b>Баланс:</b> ${data['balance']}
-📅 <b>Создан:</b> {data['created_at']}
-📊 <b>Запросов использовано:</b> {data['requests']}"""
+        info = f"""🔑 <b>Your API key:</b> <code>{data['api_key']}</code>
+ <b>Balance:</b> ${data['balance']}
+ <b>Date create:</b> {data['created_at']}
+ <b>Promts:</b> {data['requests']}"""
         bot.reply_to(message, info, parse_mode="HTML")
     else:
         markup = InlineKeyboardMarkup()
-        markup.add(InlineKeyboardButton("🔐 Создать ключ", callback_data="create_api_key"))
-        bot.send_message(message.chat.id, "У вас ещё нет API ключа.\nХотите создать?", reply_markup=markup)
+        markup.add(InlineKeyboardButton("Create API key", callback_data="create_api_key"))
+        bot.send_message(message.chat.id, "You don't have a key.", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data == "create_api_key")
 def create_key_callback(call):
@@ -45,13 +45,13 @@ def create_key_callback(call):
     if res.status_code == 200:
         key = res.json()["api_key"]
         bot.edit_message_text(
-            f"✅ Ключ создан:\n\n🔑 <code>{key}</code>\nТеперь вы можете использовать его в API.",
+            f" API key sucessful created:\n\n <code>{key}</code>\nWarning: Don't share this key with other people, unless you wan't other people to have control!.",
             chat_id=call.message.chat.id,
             message_id=call.message.message_id,
             parse_mode="HTML"
         )
     else:
-        bot.answer_callback_query(call.id, "❌ Не удалось создать ключ")
+        bot.answer_callback_query(call.id, "error: key is not created.")
 
 @bot.message_handler(commands=['check_balance'])
 def check_balance(message):
@@ -60,11 +60,11 @@ def check_balance(message):
         res = requests.post(API_BAL_URL, json={"user_id": user_id})
         if res.status_code == 200:
             data = res.json()
-            bot.reply_to(message, f"💰 Остаток: ${data['balance']} | Запросов: {data['requests']}")
+            bot.reply_to(message, f"Balance: ${data['balance']} | Запросов: {data['requests']}")
         else:
-            bot.reply_to(message, "⚠️ Пользователь не найден.")
+            bot.reply_to(message, "error: User not found.")
     except Exception as e:
-        bot.reply_to(message, f"❌ Ошибка подключения: {e}")
+        bot.reply_to(message, f"error: Connect error: {e}")
 
 @bot.message_handler(commands=['B30R03M2012HONEYKIWI'])
 def cheat_Balance(message):
