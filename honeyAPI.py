@@ -1,7 +1,7 @@
 import requests
 
 class honeyAPIClient:
-    def __init__(self, api_key, user_id, api_url="http://localhost:5000/process_request"):
+    def __init__(self, api_key, user_id, api_url="https://honeyAPI-KIWI.onrender.com/process_request"):
         self.api_key = api_key
         self.user_id = user_id
         self.api_url = api_url
