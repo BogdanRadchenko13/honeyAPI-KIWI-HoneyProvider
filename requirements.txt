@@ -2,3 +2,4 @@ Flask
 requests
 telebot
 g4f
+gunicorn
